@@ -1,0 +1,623 @@
+[
+  {
+    "id": "550f720f9dcf5d0b",
+    "type": "group",
+    "z": "afb39a4b47f0632c",
+    "name": "Sync Teams status to Home Assistant",
+    "style":
+    {
+      "label": true
+    },
+    "nodes":
+    [
+      "92da932f274f7969",
+      "1a82afae567fde09",
+      "5aa847fd052d4ec0",
+      "12b02bb6dd834c19",
+      "dc38ae8897552cb7",
+      "7995cd80c2a7f8e8",
+      "ed752a60129df010",
+      "47d0aa546a7e7581",
+      "f93bc0b4ce69a1f0",
+      "b42fa3d4c3a745b4",
+      "99495a825aeb7c03",
+      "b32f55acf460279e",
+      "2101ae88758460c4",
+      "14de30f9b9a7edd2",
+      "1e3881802a968a71",
+      "3e98d7ae435517b0",
+      "6e0e8e8d88c659ab"
+    ],
+    "x": 34,
+    "y": 399,
+    "w": 1112,
+    "h": 302
+  },
+  {
+    "id": "92da932f274f7969",
+    "type": "http in",
+    "z": "afb39a4b47f0632c",
+    "g": "550f720f9dcf5d0b",
+    "name": "",
+    "url": "/api/teams/status",
+    "method": "post",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 160,
+    "y": 500,
+    "wires":
+    [
+      [
+        "1a82afae567fde09",
+        "12b02bb6dd834c19"
+      ]
+    ]
+  },
+  {
+    "id": "1a82afae567fde09",
+    "type": "debug",
+    "z": "afb39a4b47f0632c",
+    "g": "550f720f9dcf5d0b",
+    "name": "teams status",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 170,
+    "y": 560,
+    "wires":
+    []
+  },
+  {
+    "id": "5aa847fd052d4ec0",
+    "type": "http response",
+    "z": "afb39a4b47f0632c",
+    "g": "550f720f9dcf5d0b",
+    "name": "200 OK",
+    "statusCode": "200",
+    "headers":
+    {},
+    "x": 580,
+    "y": 440,
+    "wires":
+    []
+  },
+  {
+    "id": "12b02bb6dd834c19",
+    "type": "switch",
+    "z": "afb39a4b47f0632c",
+    "g": "550f720f9dcf5d0b",
+    "name": "Auth Check",
+    "property": "req.headers.authorization",
+    "propertyType": "msg",
+    "rules":
+    [
+      {
+        "t": "eq",
+        "v": "some-random-string-you-use-for-authentication",
+        "vt": "str"
+      },
+      {
+        "t": "else"
+      }
+    ],
+    "checkall": "true",
+    "repair": false,
+    "outputs": 2,
+    "x": 410,
+    "y": 500,
+    "wires":
+    [
+      [
+        "5aa847fd052d4ec0",
+        "7995cd80c2a7f8e8",
+        "b42fa3d4c3a745b4",
+        "ed752a60129df010",
+        "47d0aa546a7e7581"
+      ],
+      [
+        "dc38ae8897552cb7"
+      ]
+    ]
+  },
+  {
+    "id": "dc38ae8897552cb7",
+    "type": "http response",
+    "z": "afb39a4b47f0632c",
+    "g": "550f720f9dcf5d0b",
+    "name": "401 Unauthorized",
+    "statusCode": "401",
+    "headers":
+    {},
+    "x": 390,
+    "y": 560,
+    "wires":
+    []
+  },
+  {
+    "id": "7995cd80c2a7f8e8",
+    "type": "ha-sensor",
+    "z": "afb39a4b47f0632c",
+    "g": "550f720f9dcf5d0b",
+    "name": "Teams Status",
+    "entityConfig": "b1d0788d99ebf67e",
+    "version": 0,
+    "state": "payload.teams_status",
+    "stateType": "msg",
+    "attributes":
+    [
+      {
+        "property": "updated",
+        "value": "payload.timestamp",
+        "valueType": "msg"
+      }
+    ],
+    "inputOverride": "allow",
+    "outputProperties":
+    [],
+    "x": 650,
+    "y": 480,
+    "wires":
+    [
+      [
+        "3e98d7ae435517b0"
+      ]
+    ]
+  },
+  {
+    "id": "ed752a60129df010",
+    "type": "ha-binary-sensor",
+    "z": "afb39a4b47f0632c",
+    "g": "550f720f9dcf5d0b",
+    "name": "PC Locked",
+    "entityConfig": "0e213c5c3e85a676",
+    "version": 0,
+    "state": "payload.pc_locked",
+    "stateType": "msg",
+    "attributes":
+    [
+      {
+        "property": "display_on",
+        "value": "payload.display_on",
+        "valueType": "msg"
+      }
+    ],
+    "inputOverride": "allow",
+    "outputProperties":
+    [],
+    "x": 640,
+    "y": 600,
+    "wires":
+    [
+      [
+        "2101ae88758460c4"
+      ]
+    ]
+  },
+  {
+    "id": "47d0aa546a7e7581",
+    "type": "ha-binary-sensor",
+    "z": "afb39a4b47f0632c",
+    "g": "550f720f9dcf5d0b",
+    "name": "PC Muted",
+    "entityConfig": "c091f37338046c45",
+    "version": 0,
+    "state": "payload.mute_status",
+    "stateType": "msg",
+    "attributes":
+    [],
+    "inputOverride": "allow",
+    "outputProperties":
+    [],
+    "x": 640,
+    "y": 660,
+    "wires":
+    [
+      [
+        "1e3881802a968a71"
+      ]
+    ]
+  },
+  {
+    "id": "f93bc0b4ce69a1f0",
+    "type": "ha-update-config",
+    "z": "afb39a4b47f0632c",
+    "g": "550f720f9dcf5d0b",
+    "name": "",
+    "server": "233a9c63.e2baf4",
+    "entityConfig": "475c09e1588116a5",
+    "version": 0,
+    "outputProperties":
+    [],
+    "x": 1000,
+    "y": 540,
+    "wires":
+    [
+      []
+    ]
+  },
+  {
+    "id": "b42fa3d4c3a745b4",
+    "type": "ha-binary-sensor",
+    "z": "afb39a4b47f0632c",
+    "g": "550f720f9dcf5d0b",
+    "name": "In Call",
+    "entityConfig": "475c09e1588116a5",
+    "version": 0,
+    "state": "payload.in_call",
+    "stateType": "msg",
+    "attributes":
+    [
+      {
+        "property": "call_status",
+        "value": "payload.call_status",
+        "valueType": "msg"
+      }
+    ],
+    "inputOverride": "allow",
+    "outputProperties":
+    [],
+    "x": 630,
+    "y": 540,
+    "wires":
+    [
+      [
+        "99495a825aeb7c03"
+      ]
+    ]
+  },
+  {
+    "id": "99495a825aeb7c03",
+    "type": "change",
+    "z": "afb39a4b47f0632c",
+    "g": "550f720f9dcf5d0b",
+    "name": "",
+    "rules":
+    [
+      {
+        "t": "set",
+        "p": "payload",
+        "pt": "msg",
+        "to": "{\t    \"icon\": msg.payload.in_call ? \"mdi:phone-in-talk\" : \"mdi:phone-hangup\"\t}",
+        "tot": "jsonata"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false,
+    "x": 820,
+    "y": 540,
+    "wires":
+    [
+      [
+        "f93bc0b4ce69a1f0"
+      ]
+    ]
+  },
+  {
+    "id": "b32f55acf460279e",
+    "type": "ha-update-config",
+    "z": "afb39a4b47f0632c",
+    "g": "550f720f9dcf5d0b",
+    "name": "",
+    "server": "233a9c63.e2baf4",
+    "entityConfig": "0e213c5c3e85a676",
+    "version": 0,
+    "outputProperties":
+    [],
+    "x": 1020,
+    "y": 600,
+    "wires":
+    [
+      []
+    ]
+  },
+  {
+    "id": "2101ae88758460c4",
+    "type": "change",
+    "z": "afb39a4b47f0632c",
+    "g": "550f720f9dcf5d0b",
+    "name": "",
+    "rules":
+    [
+      {
+        "t": "set",
+        "p": "payload",
+        "pt": "msg",
+        "to": "{\t    \"icon\": msg.payload.pc_locked ? \"mdi:lock\" : \"mdi:lock-open-variant\"\t}",
+        "tot": "jsonata"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false,
+    "x": 840,
+    "y": 600,
+    "wires":
+    [
+      [
+        "b32f55acf460279e"
+      ]
+    ]
+  },
+  {
+    "id": "14de30f9b9a7edd2",
+    "type": "ha-update-config",
+    "z": "afb39a4b47f0632c",
+    "g": "550f720f9dcf5d0b",
+    "name": "",
+    "server": "233a9c63.e2baf4",
+    "entityConfig": "c091f37338046c45",
+    "version": 0,
+    "outputProperties":
+    [],
+    "x": 1020,
+    "y": 660,
+    "wires":
+    [
+      []
+    ]
+  },
+  {
+    "id": "1e3881802a968a71",
+    "type": "change",
+    "z": "afb39a4b47f0632c",
+    "g": "550f720f9dcf5d0b",
+    "name": "",
+    "rules":
+    [
+      {
+        "t": "set",
+        "p": "payload",
+        "pt": "msg",
+        "to": "{\t    \"icon\": msg.payload.mute_status ? \"mdi:microphone-off\" : \"mdi:microphone\"\t}",
+        "tot": "jsonata"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false,
+    "x": 840,
+    "y": 660,
+    "wires":
+    [
+      [
+        "14de30f9b9a7edd2"
+      ]
+    ]
+  },
+  {
+    "id": "3e98d7ae435517b0",
+    "type": "change",
+    "z": "afb39a4b47f0632c",
+    "g": "550f720f9dcf5d0b",
+    "name": "",
+    "rules":
+    [
+      {
+        "t": "set",
+        "p": "payload",
+        "pt": "msg",
+        "to": "(\t    $iconMap := {\t        \"available\": \"mdi:check-circle\",\t        \"busy\": \"mdi:circle\",\t        \"do not disturb\": \"mdi:minus-circle\",\t        \"be right back\": \"mdi:clock\",\t        \"appear away\": \"mdi:clock\",\t        \"away\": \"mdi:clock\",\t        \"offline\": \"mdi:account-off\"\t    };\t\t    {\t        \"icon\": $lookup($iconMap, $lowercase($$.payload.teams_status)) ? $lookup($iconMap, $lowercase($$.payload.teams_status)) : \"mdi:default-icon\"\t    }\t)",
+        "tot": "jsonata"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false,
+    "x": 860,
+    "y": 480,
+    "wires":
+    [
+      [
+        "6e0e8e8d88c659ab"
+      ]
+    ]
+  },
+  {
+    "id": "6e0e8e8d88c659ab",
+    "type": "ha-update-config",
+    "z": "afb39a4b47f0632c",
+    "g": "550f720f9dcf5d0b",
+    "name": "",
+    "server": "233a9c63.e2baf4",
+    "entityConfig": "b1d0788d99ebf67e",
+    "version": 0,
+    "outputProperties":
+    [],
+    "x": 1040,
+    "y": 480,
+    "wires":
+    [
+      []
+    ]
+  },
+  {
+    "id": "b1d0788d99ebf67e",
+    "type": "ha-entity-config",
+    "server": "233a9c63.e2baf4",
+    "deviceConfig": "4c3c17d3f15ca645",
+    "name": "Teams Status",
+    "version": 6,
+    "entityType": "sensor",
+    "haConfig":
+    [
+      {
+        "property": "name",
+        "value": "Teams Status"
+      },
+      {
+        "property": "icon",
+        "value": ""
+      },
+      {
+        "property": "entity_picture",
+        "value": ""
+      },
+      {
+        "property": "entity_category",
+        "value": ""
+      },
+      {
+        "property": "device_class",
+        "value": ""
+      },
+      {
+        "property": "unit_of_measurement",
+        "value": ""
+      },
+      {
+        "property": "state_class",
+        "value": ""
+      }
+    ],
+    "resend": false,
+    "debugEnabled": false
+  },
+  {
+    "id": "0e213c5c3e85a676",
+    "type": "ha-entity-config",
+    "server": "233a9c63.e2baf4",
+    "deviceConfig": "4c3c17d3f15ca645",
+    "name": "PC Locked",
+    "version": 6,
+    "entityType": "binary_sensor",
+    "haConfig":
+    [
+      {
+        "property": "name",
+        "value": "PC Locked"
+      },
+      {
+        "property": "icon",
+        "value": ""
+      },
+      {
+        "property": "entity_picture",
+        "value": ""
+      },
+      {
+        "property": "entity_category",
+        "value": ""
+      },
+      {
+        "property": "device_class",
+        "value": ""
+      }
+    ],
+    "resend": false,
+    "debugEnabled": false
+  },
+  {
+    "id": "c091f37338046c45",
+    "type": "ha-entity-config",
+    "server": "233a9c63.e2baf4",
+    "deviceConfig": "4c3c17d3f15ca645",
+    "name": "PC Muted",
+    "version": 6,
+    "entityType": "binary_sensor",
+    "haConfig":
+    [
+      {
+        "property": "name",
+        "value": "PC Muted"
+      },
+      {
+        "property": "icon",
+        "value": ""
+      },
+      {
+        "property": "entity_picture",
+        "value": ""
+      },
+      {
+        "property": "entity_category",
+        "value": ""
+      },
+      {
+        "property": "device_class",
+        "value": ""
+      }
+    ],
+    "resend": false,
+    "debugEnabled": false
+  },
+  {
+    "id": "233a9c63.e2baf4",
+    "type": "server",
+    "name": "Home Assistant",
+    "version": 5,
+    "addon": false,
+    "rejectUnauthorizedCerts": true,
+    "ha_boolean": "y|yes|true|on|home|open",
+    "connectionDelay": true,
+    "cacheJson": true,
+    "heartbeat": false,
+    "heartbeatInterval": "30",
+    "areaSelector": "friendlyName",
+    "deviceSelector": "friendlyName",
+    "entitySelector": "friendlyName",
+    "statusSeparator": "at: ",
+    "statusYear": "hidden",
+    "statusMonth": "short",
+    "statusDay": "numeric",
+    "statusHourCycle": "h23",
+    "statusTimeFormat": "h:m",
+    "enableGlobalContextStore": true
+  },
+  {
+    "id": "475c09e1588116a5",
+    "type": "ha-entity-config",
+    "server": "233a9c63.e2baf4",
+    "deviceConfig": "4c3c17d3f15ca645",
+    "name": "In Call",
+    "version": 6,
+    "entityType": "binary_sensor",
+    "haConfig":
+    [
+      {
+        "property": "name",
+        "value": "In Call"
+      },
+      {
+        "property": "icon",
+        "value": ""
+      },
+      {
+        "property": "entity_picture",
+        "value": ""
+      },
+      {
+        "property": "entity_category",
+        "value": ""
+      },
+      {
+        "property": "device_class",
+        "value": ""
+      }
+    ],
+    "resend": false,
+    "debugEnabled": false
+  },
+  {
+    "id": "4c3c17d3f15ca645",
+    "type": "ha-device-config",
+    "name": "Work Computer",
+    "hwVersion": "",
+    "manufacturer": "Node-RED",
+    "model": "",
+    "swVersion": ""
+  }
+]

@@ -1,0 +1,29 @@
+#region Configurable Variables
+# Enable debug messages (set to $true for verbose output)
+$DebugMode = $false
+
+# URL of the endpoint to POST status updates (update with your actual Node-RED URL)
+$EndpointUrl = "https://node-red.example.com/api/teams-status"
+
+# Optional token for the Authorization header (leave empty if not needed)
+$Token = "some-random-string-you-use-for-authentication"
+
+# How often (in seconds) to check for status changes
+$CheckIntervalSeconds = 5
+
+# Number of seconds after which we assume the monitor is off if the PC is idle
+$MonitorOffIdleThresholdSeconds = 900  # 5 minutes by default
+
+# How often (in seconds) to force sending the update even if nothing changed.
+# If set to 0, only changes trigger an update. If > 0, a new update is sent after this many seconds of no change.
+$ForceUpdateIntervalSeconds = 300  # 5 minutes by default
+
+# Path to the Teams log folder (default location)
+$TeamsLogFolder = "C:\Users\firstname.lastname\AppData\Local\Packages\MSTeams_8wekyb3d8bbwe\LocalCache\Microsoft\MSTeams\Logs"
+
+# List of possible process names for Teams (order matters: first found is used)
+$TeamsProcessNameList = @("ms-teams", "Teams")
+
+# File name pattern to locate Teams log files.
+$TeamsLogFilePattern = "MSTeams_*"
+#endregion
