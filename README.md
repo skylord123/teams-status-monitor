@@ -2,7 +2,7 @@
 
 A PowerShell project to monitor your Microsoft Teams status and local computer state. This script tracks Teams availability, call activity (including mute status), workstation lock status, and display power state. When any monitored values change—or after a specified interval—the script sends an update (in JSON format) to a configurable endpoint.
 
-I use this to get my teams info into Home Assistant so I can do automations like turning off my smart speaker alerts when I am in a meeting. This also allows my spouse to check if I am in a meeting or not.  I set this up so it sends to Node-RED which then updates the entities in Home Assistant for you. 
+I use this to get my teams info into Home Assistant so I can do automations like turning off my smart speaker alerts when I am in a meeting. This also allows my spouse to check if I am in a meeting or not.  I set this up so it sends to Node-RED which then updates the entities in Home Assistant for you. You can find my flow for accomplishing this [here](./node-red-example)
 
 **Example Payload:**
 ```json
