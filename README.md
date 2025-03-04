@@ -7,7 +7,7 @@ I use this to get my teams info into Home Assistant so I can do automations like
 **Example Payload:**
 ```json
 {
-  "teams_status": "Available",
+  "teams_status": "Busy",
   "call_status": "In A Call",
   "mute_status": true,
   "in_call": true,

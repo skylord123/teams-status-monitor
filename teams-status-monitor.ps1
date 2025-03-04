@@ -133,16 +133,25 @@ function Get-TeamsStatusAndActivity {
         Write-DebugInfo "Teams log folder found: $TeamsLogFolder"
     }
 
-    $latestLogFile = Get-ChildItem -Path $TeamsLogFolder -Filter $TeamsLogFilePattern |
-                     Sort-Object LastWriteTime -Descending | Select-Object -First 1
-
-    if (-not $latestLogFile) {
+    # Get all matching log files and sort them by LastWriteTime (oldest first)
+    $logFiles = Get-ChildItem -Path $TeamsLogFolder -Filter $TeamsLogFilePattern | Sort-Object LastWriteTime
+    if (-not $logFiles) {
         Write-DebugInfo "No log files matching pattern '$TeamsLogFilePattern' in '$TeamsLogFolder'."
         return @{ teams_status = "Unknown"; call_status = "Unknown"; mute_status = $false }
     }
-    else {
-        Write-DebugInfo "Latest log file detected: $($latestLogFile.FullName)"
+
+    # If there are at least two log files, use the second oldest and the latest.
+    if ($logFiles.Count -ge 2) {
+        $logsToSearch = $logFiles[-2..-1]
+        Write-DebugInfo "Concatenating logs: $($logsToSearch[0].FullName) and $($logsToSearch[1].FullName)"
     }
+    else {
+        $logsToSearch = $logFiles
+        Write-DebugInfo "Using single log file: $($logsToSearch[0].FullName)"
+    }
+
+    # Combine the content of the selected log files (oldest first then newest)
+    $combinedContent = $logsToSearch | ForEach-Object { Get-Content $_.FullName }
 
     try {
         # Define patterns for the various log row formats that include status information.
@@ -153,18 +162,18 @@ function Get-TeamsStatusAndActivity {
             "SetTaskbarIconOverlay"
         )
 
-        # Search the entire file for any of these patterns (and containing "status")
-        $statusLine = Select-String -Path $latestLogFile.FullName -Pattern $patterns |
+        # Search the combined log for any of these patterns (and containing "status")
+        $statusLine = $combinedContent | Select-String -Pattern $patterns |
                       Where-Object { $_.Line -match "status" } |
                       Select-Object -Last 1
 
         if ($null -eq $statusLine) {
-            Write-DebugInfo "No status line found in log. teams_status='Unknown'."
+            Write-DebugInfo "No status line found in logs. teams_status='Unknown'."
             $teams_status = "Unknown"
         }
         else {
             $lineText = $statusLine.Line
-            Write-DebugInfo "Status line from log: '$lineText'"
+            Write-DebugInfo "Status line from logs: '$lineText'"
             if     ($lineText -match "(?i)available")    { $teams_status = "Available" }
             elseif ($lineText -match "(?i)busy")         { $teams_status = "Busy" }
             elseif ($lineText -match "(?i)away")         { $teams_status = "Away" }
@@ -178,14 +187,14 @@ function Get-TeamsStatusAndActivity {
         }
 
         # Extract a line that indicates call activity.
-        $activityLine = Select-String -Path $latestLogFile.FullName -Pattern "NotifyCallActive", "NotifyCallAccepted", "NotifyCallEnded" | Select-Object -Last 1
+        $activityLine = $combinedContent | Select-String -Pattern "NotifyCallActive", "NotifyCallAccepted", "NotifyCallEnded" | Select-Object -Last 1
         if ($null -eq $activityLine) {
             Write-DebugInfo "No activity line found. call_status='Not In A Call'."
             $call_status = "Not In A Call"
         }
         else {
             $activityText = $activityLine.Line
-            Write-DebugInfo "Activity line from log: '$activityText'"
+            Write-DebugInfo "Activity line from logs: '$activityText'"
             if     ($activityText -match "(?i)NotifyCallActive" -or $activityText -match "(?i)NotifyCallAccepted") {
                 $call_status = "In A Call"
             }
@@ -206,7 +215,7 @@ function Get-TeamsStatusAndActivity {
         }
         else {
             # Extract the latest mute state change that includes the mute state
-            $muteLine = Select-String -Path $latestLogFile.FullName -Pattern "reportMuteStateChange.*mute state:" | Select-Object -Last 1
+            $muteLine = $combinedContent | Select-String -Pattern "reportMuteStateChange.*mute state:" | Select-Object -Last 1
             if ($muteLine) {
                 if ($muteLine.Line -match "mute state:(?<muteState>true|false)") {
                     $mute_status = ($Matches["muteState"] -eq "true")
@@ -214,17 +223,16 @@ function Get-TeamsStatusAndActivity {
                 else {
                     $mute_status = $false
                 }
-                Write-DebugInfo "Mute state determined from log: $mute_status"
+                Write-DebugInfo "Mute state determined from logs: $mute_status"
             }
             else {
                 Write-DebugInfo "No mute state line found. Setting mute_status to false."
                 $mute_status = $false
             }
-
         }
     }
     catch {
-        Write-DebugInfo "Error reading log file: $_"
+        Write-DebugInfo "Error reading log files: $_"
         return @{ teams_status = "Unknown"; call_status = "Unknown"; mute_status = $false }
     }
 
